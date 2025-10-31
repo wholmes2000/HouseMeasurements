@@ -1,16 +1,22 @@
 {
-  "name": "",
+  "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "src/functions/*.js",
   "scripts": {
-    "start": "func start",
-    "test": "echo \"No tests yet...\""
+    "build": "tsc",
+    "start": "ts-node src/functions/ingestData/ingestData.ts"
   },
   "dependencies": {
-    "@azure/functions": "^4.0.0"
+    "@azure/data-tables": "^13.3.1",
+    "@azure/functions": "^4.8.0"
   },
   "devDependencies": {
-    "azure-functions-core-tools": "^4.x"
-  }
+    "@types/node": "^24.9.2",
+    "azure-functions-core-tools": "^4.x",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
