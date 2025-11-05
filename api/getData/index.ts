@@ -1,45 +1,67 @@
 import { TableClient } from "@azure/data-tables";
+import { HttpRequest } from "@azure/functions";
 
-export default async function getData(context: any, req: any): Promise<void> {
-    const connectionString: string = process.env.AzureStorageConnectionString || "";
+const getData = async function (context: any, req: HttpRequest): Promise<void> {
+    const connectionString = process.env.MY_TABLE_STORAGE_CONNECTION_STRING;
     const tableName = "HouseMeasurementsData";
 
-    const client = TableClient.fromConnectionString(connectionString, tableName);
-
-    const sensorId = "sensor1";
-
-    // Parse optional start/end timestamps
-    const startParam: string | undefined = req.query.start;
-    const endParam: string | undefined = req.query.end;
-
-    const startTime = startParam ? new Date(startParam) : new Date(0); // default epoch
-    const endTime = endParam ? new Date(endParam) : new Date(); // default now
-
-    // Build ISO string RowKeys for filtering
-    const startRowKey = startTime.toISOString();
-    const endRowKey = endTime.toISOString();
-
-    // Azure Table Storage server-side filter by PartitionKey + RowKey range
-    const filter = `PartitionKey eq '${sensorId}' and RowKey ge '${startRowKey}' and RowKey le '${endRowKey}'`;
-
-    const entities = client.listEntities({
-        queryOptions: { filter }
-    });
-
-    const results: any[] = [];
-
-    for await (const entity of entities) {
-        // Already filtered by Azure; just push values
-        results.push({
-            timestamp: entity.timestamp,
-            temperature: entity.temperature,
-            humidity: entity.humidity,
-            pressure: entity.pressure
-        });
+    if (!connectionString) {
+        context.log.error("Environment variable MY_TABLE_STORAGE_CONNECTION_STRING is missing");
+        context.res = { status: 500, body: "Server configuration error" };
+        return;
     }
 
-    context.res = {
-        headers: { "Content-Type": "application/json" },
-        body: results
-    };
-}
+    const client = TableClient.fromConnectionString(connectionString, tableName);
+    const sensorId = "sensor1";
+
+    // Properly type query parameters
+    interface QueryParams {
+        start?: string;
+        end?: string;
+    }
+
+    const { start: startParam, end: endParam } = req.query as QueryParams;
+
+    const startTime = startParam ? new Date(startParam) : new Date(0);
+    const endTime = endParam ? new Date(endParam) : new Date();
+
+    if (isNaN(startTime.getTime()) || isNaN(endTime.getTime())) {
+        context.res = { status: 400, body: "Invalid start or end date" };
+        return;
+    }
+
+    // Add 23:59:59.999 to endTime so the end date is inclusive
+    const endOfDay = new Date(endTime.getTime());
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const startRowKey = startTime.toISOString();
+    const endRowKey = endOfDay.toISOString();
+
+    const filter = `PartitionKey eq '${sensorId}' and RowKey ge '${startRowKey}' and RowKey le '${endRowKey}'`;
+
+    try {
+        const entities = client.listEntities({ queryOptions: { filter } });
+        const results: any[] = [];
+
+        for await (const entity of entities) {
+            results.push({
+                timestamp: entity.timestamp,
+                temperature: entity.temperature,
+                humidity: entity.humidity,
+                pressure: entity.pressure
+            });
+        }
+
+        context.res = {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+            body: results
+        };
+        context.log.info(`Returned ${results.length} readings`);
+    } catch (err) {
+        context.log.error("Error fetching data:", err);
+        context.res = { status: 500, body: "Failed to fetch data" };
+    }
+};
+
+export default getData;
