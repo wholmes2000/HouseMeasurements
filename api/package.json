@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/functions/ingestData/ingestData.ts"
+    "start": "func start"
   },
   "dependencies": {
     "@azure/data-tables": "^13.3.1",

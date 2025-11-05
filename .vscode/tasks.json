@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Watch API TypeScript",
+            "type": "shell",
+            "command": "npx tsc --watch --preserveWatchOutput",
+            "options": {
+                "cwd": "${workspaceFolder}/api"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "React Dev Server",
+            "type": "shell",
+            "command": "npm start",
+            "options": {
+                "cwd": "${workspaceFolder}/web"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Start SWA (proxy to React dev)",
+            "type": "shell",
+            "command": "swa start --app-location web --api-location api",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Full Project",
+            "dependsOn": [
+                "React Dev Server",
+                "Watch API TypeScript",
+                "Start SWA (proxy to React dev)"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": []
+        }
+    ]
+}

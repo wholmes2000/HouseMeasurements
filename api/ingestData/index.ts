@@ -1,6 +1,6 @@
 import { TableClient } from "@azure/data-tables";
 
-export default async function (context: any, req: any): Promise<void> {
+export default async function ingestData(context: any, req: any): Promise<void> {
     const connectionString: string = process.env.AzureStorageConnectionString || "";
     const tableName = "HouseMeasurementsData";
 
@@ -8,19 +8,21 @@ export default async function (context: any, req: any): Promise<void> {
 
     const data = req.body;
 
+    const timestamp = new Date().toISOString();
+
     const entity = {
         partitionKey: "sensor1",
-        rowKey: Date.now().toString(),
+        rowKey: timestamp,
         temperature: data.temperature,
         humidity: data.humidity,
         pressure: data.pressure,
-        timestamp: new Date().toISOString()
+        timestamp: timestamp
     };
 
     await client.createEntity(entity);
 
     context.res = {
         status: 200,
-        body: "Data stored"
+        body: "Data Stored"
     };
 }
