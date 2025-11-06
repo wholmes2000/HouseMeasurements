@@ -3,7 +3,8 @@ import { HttpRequest } from "@azure/functions";
 
 const getData = async function (context: any, req: HttpRequest): Promise<void> {
     const connectionString = process.env.MY_TABLE_STORAGE_CONNECTION_STRING;
-    const tableName = "HouseMeasurementsData";
+    const sensorId = process.env.MY_SENSOR_NAME;
+    const tableName = process.env.MY_TABLE_NAME;
 
     if (!connectionString) {
         context.log.error("Environment variable MY_TABLE_STORAGE_CONNECTION_STRING is missing");
@@ -11,8 +12,19 @@ const getData = async function (context: any, req: HttpRequest): Promise<void> {
         return;
     }
 
+    if (!sensorId) {
+        context.log.error("Environment variable MY_SENSOR_NAME is missing");
+        context.res = { status: 500, body: "Server configuration error" };
+        return;
+    }
+
+    if (!tableName) {
+        context.log.error("Environment variable MY_TABLE_NAME is missing");
+        context.res = { status: 500, body: "Server configuration error" };
+        return;
+    }
+
     const client = TableClient.fromConnectionString(connectionString, tableName);
-    const sensorId = "sensor1";
 
     // Properly type query parameters
     interface QueryParams {

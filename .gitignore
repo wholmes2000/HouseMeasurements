@@ -1,0 +1,67 @@
+## Combined .gitignore for HouseMeasurements project
+
+# Node.js dependencies (applies to both web and api)
+**/node_modules
+/.pnp
+.pnp.js
+
+# Build outputs
+**/build
+**/dist
+
+# TypeScript compiled JavaScript and maps for Azure Functions
+**/*.js
+**/*.js.map
+
+# Testing
+**/coverage
+**/TestResults
+
+# Python packages and environments
+**/.python_packages/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Misc
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local configuration files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+**/local.settings.json
+**/appsettings.json
+**/secrets
+**/data
+**/.App_Data
+
+# Azure / Visual Studio artifacts
+**/bin
+**/obj
+**/csx
+**/.vs
+**/edge
+**/Publish
+*.user
+*.suo
+*.cscfg
+*.Cache
+**/packages
+**/tools/NuGet.exe
+
+# Azurite artifacts
+**/__blobstorage__
+**/__queuestorage__
+**/__azurite_db*__.json
