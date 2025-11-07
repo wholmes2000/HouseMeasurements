@@ -39,7 +39,7 @@ const ingestData = async function (context: any, req: HttpRequest): Promise<void
         }
     } catch (err) {
         context.log.error("Error parsing body:", err);
-        context.res = { status: 400, body: "Invalid JSON body" };
+        context.res = { status: 400, body: `Invalid JSON body. Error: ${err}` };
         return;
     }
 
@@ -72,7 +72,7 @@ const ingestData = async function (context: any, req: HttpRequest): Promise<void
         context.res = { status: 200, body: { message: "Data stored", rowKey } };
     } catch (err) {
         context.log.error("Error storing entity:", err);
-        context.res = { status: 500, body: "Failed to store data" };
+        context.res = { status: 500, body: `Failed to store data. Error: ${err}` };
     }
 };
 
