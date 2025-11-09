@@ -64,7 +64,7 @@ const ingestData = async function (context: any, req: HttpRequest): Promise<void
     const { temperature, humidity, pressure } = body.readings;
     const { uid } = body;
 
-    const entity = { partitionKey, rowKey, temperature, humidity, pressure, uid, timestamp: rowKey };
+    const entity = { partitionKey, rowKey, temperature, humidity, pressure, uid };
 
     try {
         await client.createEntity(entity);

@@ -57,7 +57,7 @@ const getData = async function (context: any, req: HttpRequest): Promise<void> {
 
         for await (const entity of entities) {
             results.push({
-                timestamp: entity.timestamp,
+                rowKey: entity.rowKey,
                 temperature: entity.temperature,
                 humidity: entity.humidity,
                 pressure: entity.pressure
