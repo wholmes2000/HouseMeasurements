@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-    LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid
+    LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid,
+    ResponsiveContainer
 } from "recharts";
 
 interface Reading {
@@ -51,44 +52,50 @@ export default function SensorChart() {
                 <button style={{ marginLeft: "1rem" }} onClick={fetchData}>Update</button>
             </div>
 
-            <LineChart width={900} height={500} data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    dataKey="rowKey"
-                    type="number"
-                    domain={[new Date(`${startDate}T${startTime}:00`).getTime(), new Date(`${endDate}T${endTime}:59`).getTime()]}
-                    scale="time"
-                    tickFormatter={(value) => new Date(value).toLocaleString()}
-                />
-                <YAxis yAxisId="left" label={{ value: 'Temperature °C / Humidity %', angle: -90, position: 'insideLeft' }} />
-                <YAxis yAxisId="right" orientation="right" label={{ value: 'Pressure hPa', angle: -90, position: 'insideRight' }} />
-                <Tooltip
-                    content={({ active, payload, label }) => {
-                        if (active && payload && payload.length > 0) {
-                            const point = payload[0].payload;
-                            // rowKey is a number (timestamp), reconstruct ISO string
-                            const isoString = new Date(point.rowKey).toISOString();
-                            return (
-                                <div style={{
-                                    background: "white",
-                                    border: "1px solid #ccc",
-                                    padding: "8px"
-                                }}>
-                                    <div><strong>Time:</strong> {isoString}</div>
-                                    <div><span style={{ color: "red" }}>Temperature:</span> {point.temperature} °C</div>
-                                    <div><span style={{ color: "blue" }}>Humidity:</span> {point.humidity} %</div>
-                                    <div><span style={{ color: "green" }}>Pressure:</span> {point.pressure} hPa</div>
-                                </div>
-                            );
-                        }
-                        return null;
-                    }}
-                />
-                <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="temperature" stroke="red" name="Temperature °C" />
-                <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="blue" name="Humidity %" />
-                <Line yAxisId="right" type="monotone" dataKey="pressure" stroke="green" name="Pressure hPa" />
-            </LineChart>
+            <ResponsiveContainer width="100%" height={900}>
+                <LineChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                        dataKey="rowKey"
+                        type="number"
+                        domain={[
+                            data.length > 0 ? Math.min(...data.map((d) => new Date(d.rowKey).getTime())) : 'auto',
+                            data.length > 0 ? Math.max(...data.map((d) => new Date(d.rowKey).getTime())) : 'auto',
+                        ]}
+                        scale="time"
+                        tickFormatter={(value) => new Date(value).toLocaleString([], { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        interval={'equidistantPreserveStart'}
+                    />
+                    <YAxis yAxisId="left" label={{ value: 'Temperature °C / Humidity %', angle: -90, position: 'insideLeft' }} />
+                    <YAxis yAxisId="right" orientation="right" label={{ value: 'Pressure hPa', angle: -90, position: 'insideRight' }} />
+                    <Tooltip
+                        content={({ active, payload, label }) => {
+                            if (active && payload && payload.length > 0) {
+                                const point = payload[0].payload;
+                                // rowKey is a time of reading
+                                const isoString = new Date(point.rowKey).toLocaleString([], { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+                                return (
+                                    <div style={{
+                                        background: "white",
+                                        border: "1px solid #ccc",
+                                        padding: "8px"
+                                    }}>
+                                        <div><strong>Time:</strong> {isoString}</div>
+                                        <div><span style={{ color: "red" }}>Temperature:</span> {point.temperature} °C</div>
+                                        <div><span style={{ color: "blue" }}>Humidity:</span> {point.humidity} %</div>
+                                        <div><span style={{ color: "green" }}>Pressure:</span> {point.pressure} hPa</div>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <Legend />
+                    <Line yAxisId="left" type="monotone" dataKey="temperature" stroke="red" name="Temperature °C" />
+                    <Line yAxisId="left" type="monotone" dataKey="humidity" stroke="blue" name="Humidity %" />
+                    <Line yAxisId="right" type="monotone" dataKey="pressure" stroke="green" name="Pressure hPa" />
+                </LineChart>
+            </ResponsiveContainer>
         </div>
     );
 }
