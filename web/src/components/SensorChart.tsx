@@ -16,12 +16,21 @@ export default function SensorChart() {
     const [endTime, setEndTime] = useState<string>("23:59");
 
     const fetchData = useCallback(async () => {
+        const API_ROOT = process.env.REACT_APP_API_ROOT || "";
+
         const startIso = new Date(`${startDate}T${startTime}:00`).toISOString();
         const endIso = new Date(`${endDate}T${endTime}:59.999`).toISOString();
 
-        const res = await fetch(`/api/getData?start=${encodeURIComponent(startIso)}&end=${encodeURIComponent(endIso)}`);
+        const res = await fetch(`${API_ROOT}/api/getData?start=${encodeURIComponent(startIso)}&end=${encodeURIComponent(endIso)}`);
         const json = await res.json();
-        setData(json.map((r: Reading) => ({ ...r, rowKey: new Date(r.rowKey).getTime() })));
+
+        if (!json.measurements || !Array.isArray(json.measurements)) {
+            console.error("No measurements array returned from API", json);
+            setData([]);
+            return;
+        }
+
+        setData(json.measurements.map((r: Reading) => ({ ...r, rowKey: new Date(r.rowKey) })));
     }, [startDate, startTime, endDate, endTime]);
 
     useEffect(() => {
