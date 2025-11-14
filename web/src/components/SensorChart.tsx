@@ -16,7 +16,7 @@ export default function SensorChart() {
     const [endTime, setEndTime] = useState<string>("23:59");
 
     const fetchData = useCallback(async () => {
-        const API_ROOT = process.env.REACT_APP_API_ROOT || "";
+        const API_ROOT = process.env.REACT_APP_API_ROOT || ""; // Use Env Var from GitHub Actions
 
         const startIso = new Date(`${startDate}T${startTime}:00`).toISOString();
         const endIso = new Date(`${endDate}T${endTime}:59.999`).toISOString();
