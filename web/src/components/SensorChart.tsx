@@ -40,7 +40,7 @@ export default function SensorChart() {
     const chartConfig: AxisConfig[] = [
         { key: "temperature", color: "red", name: "Temperature °C", yAxisId: "left" },
         { key: "humidity", color: "blue", name: "Humidity %", yAxisId: "left" },
-        { key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "right" },
+        { key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "left" },
     ];
 
     return (
@@ -77,7 +77,7 @@ export default function SensorChart() {
                 <GenericChart
                     data={data}
                     xKey="rowKey"
-                    yAxes={[{ key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "right" }]}
+                    yAxes={[{ key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "left" }]}
                     title="Pressure"
                 />
             </div>

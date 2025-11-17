@@ -19,6 +19,16 @@ interface GenericChartProps {
 export default function GenericChart({ data, xKey, yAxes, title }: GenericChartProps) {
     const minX = data.length > 0 ? Math.min(...data.map(d => new Date(d[xKey]).getTime())) : undefined;
     const maxX = data.length > 0 ? Math.max(...data.map(d => new Date(d[xKey]).getTime())) : undefined;
+    const yMin = data.length
+        ? Math.min(...yAxes.flatMap(axis => data.map(d => d[axis.key])))
+        : undefined;
+
+    const yMax = data.length
+        ? Math.max(...yAxes.flatMap(axis => data.map(d => d[axis.key])))
+        : undefined;
+
+    // Add some padding so the line is not touching the top/bottom
+    const yPadding = (yMax! - yMin!) * 0.2 || 1;
 
     return (
         <div style={{ width: "90%", margin: "auto" }}>
@@ -36,9 +46,14 @@ export default function GenericChart({ data, xKey, yAxes, title }: GenericChartP
                         }
                         interval="equidistantPreserveStart"
                     />
-                    <YAxis yAxisId="left" label={{ value: "Left Axis", angle: -90, position: "insideLeft" }} />
-                    <YAxis yAxisId="right" orientation="right" label={{ value: "Right Axis", angle: -90, position: "insideRight" }} />
-
+                    <YAxis
+                        yAxisId="left"
+                        domain={[
+                            yMin !== undefined ? yMin - yPadding : "auto",
+                            yMax !== undefined ? yMax + yPadding : "auto"
+                        ]}
+                        allowDecimals={false}
+                    />
                     <Tooltip
                         content={({ active, payload }) => {
                             if (active && payload && payload.length) {
