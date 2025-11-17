@@ -37,12 +37,6 @@ export default function SensorChart() {
         fetchData();
     }, [fetchData]);
 
-    const chartConfig: AxisConfig[] = [
-        { key: "temperature", color: "red", name: "Temperature °C", yAxisId: "left" },
-        { key: "humidity", color: "blue", name: "Humidity %", yAxisId: "left" },
-        { key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "left" },
-    ];
-
     return (
         <div>
             <div style={{ marginBottom: "1rem" }}>
