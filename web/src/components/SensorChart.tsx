@@ -55,7 +55,32 @@ export default function SensorChart() {
                 <button style={{ marginLeft: "1rem" }} onClick={fetchData}>Update</button>
             </div>
 
-            <GenericChart data={data} xKey="rowKey" yAxes={chartConfig} title="House Sensor Dashboard" />
+            <div style={{ marginTop: "2rem" }}>
+                <GenericChart
+                    data={data}
+                    xKey="rowKey"
+                    yAxes={[{ key: "temperature", color: "red", name: "Temperature °C", yAxisId: "left" }]}
+                    title="Temperature"
+                />
+            </div>
+
+            <div style={{ marginTop: "2rem" }}>
+                <GenericChart
+                    data={data}
+                    xKey="rowKey"
+                    yAxes={[{ key: "humidity", color: "blue", name: "Humidity %", yAxisId: "left" }]}
+                    title="Humidity"
+                />
+            </div>
+
+            <div style={{ marginTop: "2rem" }}>
+                <GenericChart
+                    data={data}
+                    xKey="rowKey"
+                    yAxes={[{ key: "pressure", color: "green", name: "Pressure hPa", yAxisId: "right" }]}
+                    title="Pressure"
+                />
+            </div>
         </div>
     );
 }
