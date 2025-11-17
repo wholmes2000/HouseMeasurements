@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import GenericChart, { AxisConfig } from "./GenericChart";
+import GenericChart from "./GenericChart";
 
 interface Reading {
     rowKey: string;
