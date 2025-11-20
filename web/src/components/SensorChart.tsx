@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import GenericChart from "./GenericChart";
 
 interface Reading {
@@ -16,6 +16,10 @@ export default function SensorChart() {
     const [endDate, setEndDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
     const [endTime, setEndTime] = useState<string>("23:59");
     const [smoothPoints, setSmoothPoints] = useState<number>(1);
+    const smoothPointsRef = useRef(smoothPoints);
+    useEffect(() => {
+        smoothPointsRef.current = smoothPoints;
+    }, [smoothPoints]);
 
     const smoothReadings = useCallback((inputData: Reading[], points: number): Reading[] => {
         if (!points || points <= 1) return inputData;
@@ -65,7 +69,7 @@ export default function SensorChart() {
             setRawData(mapped);
 
             // Apply smoothing using the current value at the time of fetch
-            const initialSmoothPoints = smoothPoints > 1 ? smoothPoints : 1;
+            const initialSmoothPoints = smoothPointsRef.current > 1 ? smoothPointsRef.current : 1;
             setData(smoothReadings(mapped, initialSmoothPoints));
         } catch (err) {
             console.error("Error fetching data:", err);
